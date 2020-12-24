@@ -1,15 +1,17 @@
-const router = require('express').Router(); 
-const {newVehicle, listVehicles, vehicleById, removeVehicle} = require('../controllers/vehicle');
+const router = require('express').Router();
+const { newVehicle, listVehicles, vehicleById, rentVehicle, removeVehicle } = require('../controllers/vehicle');
 const upload = require('../utils/storage');
+const verifyToken = require('../middlewares/verifyToken');
 
 
 router.route('/vehicles')
     .get(listVehicles)
-    .post(upload.single('image'),newVehicle)
+    .post(verifyToken, upload.single('image'), newVehicle)
 
 router.route('/vehicle/:_id')
-    .delete(removeVehicle)
+    .delete(verifyToken, removeVehicle)
     .get(vehicleById)
+    .put(verifyToken, rentVehicle)
 
 
 

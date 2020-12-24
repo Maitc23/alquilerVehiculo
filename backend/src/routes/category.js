@@ -1,12 +1,13 @@
 const router = require('express').Router();
 const {newCategory, listCategory, categoryById, removeCategory} = require('../controllers/category');
+const verifyToken = require('../middlewares/verifyToken');
 
 router.route('/category')
-    .get(listCategory)
-    .post( newCategory)
+    .get(verifyToken,listCategory)
+    .post(verifyToken, newCategory)
 
 router.route('/category/:_id')
-    .delete(removeCategory)
+    .delete(verifyToken,removeCategory)
     .get(categoryById)
 
 

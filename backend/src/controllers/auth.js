@@ -4,32 +4,33 @@ const jwt = require('jsonwebtoken');
 const User = require('../models/user');
 const config = require('../config/config');
 
+//Registro de usuario
 controller.register = async (req, res, next) =>{ 
     try { 
         const {name, lastName, email, password, userType, passwordCheck} = req.body;
         const correo = email.toLowerCase()
 
         if(!correo || !password || !passwordCheck) {
-            return res.status(400).json({message: "Campos obligatorios no llenados"})
+            return res.status(400).json({error: "Campos obligatorios no llenados"})
         }
         
         if(password.length < 5) {
-            return res.status(400).json({message: "La contraseña debe ser de 5 caracteres minimo"})
+            return res.status(400).json({error: "La contraseña debe ser de 5 caracteres minimo"})
         }
     
         if(password !== passwordCheck) { 
-            return res.status(400).json({message: "Las contraseñas no coinciden"});
+            return res.status(400).json({error: "Las contraseñas no coinciden"});
         }
 
-        if(userType === null) {
-            return res.status(400).json({message: "Seleccione su tipo de usuario"});
+        if(userType === '') {
+            return res.status(400).json({error: "Seleccione su tipo de usuario"});
         }
     
 
         const existingEmail= await User.findOne({email: correo});
 
         if(existingEmail) {
-            return res.status(400).json({message: "Correo ya registrado"});
+            return res.status(400).json({error: "Correo ya registrado"});
         }
 
         const user = new User({
@@ -57,6 +58,7 @@ controller.register = async (req, res, next) =>{
     }
 }
 
+//Log in
 controller.login = async (req,res, next)=> { 
 
     try {
@@ -64,18 +66,18 @@ controller.login = async (req,res, next)=> {
         const correo = email.toLowerCase()
 
         if(!correo || !password) {
-            return res.status(400).json({message: "Campos vacios."})
+            return res.status(400).json({error: "Campos vacios."})
         }
         const user = await User.findOne({email: correo})
     
         if(!user) {
-            return res.status(400).json({message: "Correo o Contraseña incorrectos"});
+            return res.status(400).json({error: "Correo o Contraseña incorrectos"});
         }
     
         const validPassword = await user.validatePassword(password);
         
         if(!validPassword) {
-            return res.status(401).json({auth: false, token: null, message: "Correo o Contraseña incorrectos"});
+            return res.status(401).json({auth: false, token: null, error: "Correo o Contraseña incorrectos"});
         }
 
         const token = jwt.sign({id: user._id}, process.env.JWT_SECRET || config.secret, {
@@ -99,10 +101,10 @@ controller.login = async (req,res, next)=> {
     }
 }
 
+//Obtencion de datos de usuario logeado
 controller.me = async (req,res, next) => { 
     
     const user = await User.findById(req.userId, { password: 0});
-    
     if(!user){
         return res.status(404).send('USER NOT FOUND')
     }
@@ -110,6 +112,7 @@ controller.me = async (req,res, next) => {
     res.json(user)
 }
 
+//Damos apertura a poder borrar la cuenta si se desea
 controller.deleteAccount = async (req, res, next) => { 
     try {
         const deletedUser = await User.findByIdAndDelete(req.userId);
@@ -120,6 +123,7 @@ controller.deleteAccount = async (req, res, next) => {
     }
 }
 
+//Validamos el token, por ende la sesion
 controller.tokenIsValid = async (req, res, next) => { 
     try {
         const token = req.headers['x-access-token'];

@@ -4,8 +4,16 @@ const bcrypt = require('bcryptjs');
 
 const userSchema = new Schema( {
 
-    name: String, 
-    lastName: String, 
+    name: {
+        type: String, 
+        trim: true, 
+        maxlength: 32
+    }, 
+    lastName: {
+        type: String, 
+        trim: true, 
+        maxlength: 32
+    }, 
     userType: {
         type: Number,
         required: true
@@ -19,8 +27,12 @@ const userSchema = new Schema( {
         type: String, 
         required: true, 
         minlength: 5
-    }
-});
+    }, 
+    vehicles: [{
+        type: Schema.Types.ObjectId, 
+        refer:'Vehicles'
+    }]
+}, {timestamps: true});
 
 userSchema.methods.encryptPassword = async (password) => { 
     const salt = await bcrypt.genSalt(10);

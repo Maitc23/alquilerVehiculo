@@ -1,5 +1,5 @@
 const { Schema, model } = require('mongoose');
-const {host, port} = require('../config/config')
+const { host, port } = require('../config/config')
 
 const vehicleSchema = new Schema({
 
@@ -39,9 +39,17 @@ const vehicleSchema = new Schema({
         ref: 'Category',
         required: true
     },
+    solicitante: {
+        type: Schema.Types.ObjectId,
+        ref: 'Users'
+    },
     quantity: {
-        type: Number, 
+        type: Number,
         default: 1
+    },
+    state: {
+        type: Number, 
+        default: 0
     },
     imgUrl: String
 },
@@ -49,7 +57,7 @@ const vehicleSchema = new Schema({
 );
 
 vehicleSchema.methods.setImgUrl = function setImgUrl(filename) {
-    this.imgUrl = `${host}:${port}/public/${filename}`; 
+    this.imgUrl = `${host}:${port}/public/${filename}`;
 
 }
 module.exports = model('Vehicles', vehicleSchema);
