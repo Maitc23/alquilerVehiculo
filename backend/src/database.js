@@ -3,7 +3,7 @@ const mongoose = require('mongoose');
 //Pasando la conexion a la BD
 const URI = process.env.MONGOBD_URI 
     ? process.env.MONGOBD_URI 
-    : 'mongodb://localhost/autosAlquiler';
+    : 'mongodb://localhost/vehiculosAlquiler';
 
 
 mongoose.connect(URI, {
