@@ -31,7 +31,7 @@ const Vehicle = (props) => {
         rentVehicle(token, vehicle._id)
             .then(data => {
                 if(data.error) {
-                    setError(true)
+                    setError(data.error)
                 } else {
                     setError('')
                     setSuccess(true)
@@ -47,7 +47,7 @@ const Vehicle = (props) => {
     
     const showError = () => {
         if(error){
-            return <h3 className="text-danger">Inicie sesion para rentar. 
+            return <h3 className="text-danger">{error}. 
             
             </h3>
         } 
